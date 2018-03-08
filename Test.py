@@ -1,4 +1,5 @@
 import numpy as np
+from Solver import Solver
 
 # Load sudokus
 sudokus = np.load("resources/data/sudokus.npy")
@@ -14,4 +15,8 @@ print(sudokus[0], "\n")
 
 # ...and its solution
 print("Solution of Sudoku #1:")
-print(solutions[0])
+print(solutions[0], "\n")
+
+solver = Solver()
+print("My solution:")
+print(solver.sudoku_solver(sudokus[0]))
