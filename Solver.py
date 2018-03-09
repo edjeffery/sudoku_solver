@@ -20,14 +20,6 @@ class Solver:
 
         board = np.copy(sudoku)
 
-        # for row in range(0, 9):
-        #     r = board[row]
-        #     count = np.count_nonzero(r == 0)
-        #
-        # for col in range(0, 9):
-        #     c = board[:, col]
-        #     count = np.count_nonzero(c == 0)
-
         while 0 in board:
 
             for i in range(0, 9):
@@ -39,11 +31,7 @@ class Solver:
                     row_high = row_low + 3
                     col_low = (j // 3) * 3
                     col_high = col_low + 3
-                    #print(row_low, row_high, col_low, col_high)
                     grid = board[row_low:row_high, col_low:col_high]
-                    #print("Row: ", row)
-                    #print("Col: ", col)
-                    #print(grid)
 
                     possible_values = []
                     for x in range(1, 10):
@@ -51,12 +39,10 @@ class Solver:
                             if x not in col:
                                 if x not in grid:
                                     possible_values.append(x)
-                    #print(i, j, possible_values)
 
                     if len(possible_values) == 1 and board[i, j] == 0:
                         board[i, j] = possible_values[0]
-            #print(board)
 
-        solved_sudoku = np.copy(board) #deep copy
+        solved_sudoku = np.copy(board)
 
         return solved_sudoku
