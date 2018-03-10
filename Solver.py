@@ -24,6 +24,12 @@ class Solver:
         # If zeros still on board, sudoku is not solved
         while 0 in board:
 
+            prev_board = np.copy(board)
+
+            min_domain = [0] * 10
+            min_domain_row = 0
+            min_domain_col = 0
+
             for i in range(0, 9):
                 # Sets the row
                 row = board[i]
@@ -41,23 +47,48 @@ class Solver:
                     grid = board[row_low:row_high, col_low:col_high]
 
                     possible_values = []
+                    # If a value is not in the same row, column or grid square then it is a possible value
                     for x in range(1, 10):
                         if x not in row:
                             if x not in col:
                                 if x not in grid:
                                     possible_values.append(x)
 
-                    # if cell is zero and has one possible value, put that value in
+                    if 0 < len(possible_values) < len(min_domain):
+                        min_domain = possible_values
+                        min_domain_row = i
+                        min_domain_col = j
+
+                    #print(i, j, possible_values)
+
+                    # If cell is zero and has one possible value, put that value in
                     if len(possible_values) == 1 and board[i, j] == 0:
                         board[i, j] = possible_values[0]
 
-                    # if cell is zero and no possible values, then impossible sudoku
+                    # If cell is zero and no possible values, then impossible sudoku
                     if len(possible_values) == 0 and board[i, j] == 0:
                         for x in range(9):
                             for y in range(9):
                                 board[x, y] = -1
                         return board
 
-        solved_sudoku = np.copy(board)
+            print(min_domain_row, min_domain_col, min_domain)
 
-        return solved_sudoku
+            # If one full iteration results in unchanged board, need to use search and backtracking to solve
+            if np.array_equal(prev_board, board):
+
+                self.backtrack(min_domain_row, min_domain_col, min_domain, board)
+
+
+        #solved_sudoku = np.copy(board)
+
+        return board
+
+    def backtrack(self, row, col, domain, board):
+        print("To backtrack with: ", row, col, domain)
+        temp_board = np.copy(board)
+        choice = np.random.choice(domain)
+        print("Choice: ", choice)
+        temp_board[row, col] = choice
+        attempt_solve = self.sudoku_solver(temp_board)
+        #if attempt_solve
