@@ -13,11 +13,11 @@ print("Shape of solutions array:", solutions.shape, "; Type of array values:", s
 t = time.process_time()
 
 for i in range(100):
-    print("Solution of Sudoku:")
-    print(solutions[i], "\n")
+    #print("Solution of Sudoku:")
+    #print(solutions[i], "\n")
     solver = Solver()
-    print("My solution:")
-    print(solver.sudoku_solver(sudokus[i]))
+    #print("My solution:")
+    solver.sudoku_solver(sudokus[i])
 
 elapsed_time = time.process_time() - t
 print(elapsed_time)
