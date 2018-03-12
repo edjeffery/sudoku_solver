@@ -30,6 +30,8 @@ class Solver:
             min_domain_row = 0
             min_domain_col = 0
 
+            count = 0
+
             for i in range(0, 9):
                 # Sets the row
                 row = board[i]
@@ -54,7 +56,7 @@ class Solver:
                                 if x not in grid:
                                     possible_values.append(x)
 
-                    if 0 < len(possible_values) < len(min_domain):
+                    if 0 < len(possible_values) < len(min_domain) and board[i, j] == 0:
                         min_domain = possible_values
                         min_domain_row = i
                         min_domain_col = j
@@ -72,6 +74,10 @@ class Solver:
                                 board[x, y] = -1
                         return board
 
+                    if board[i, j] != 0:
+                        count += 1
+            print("Count: ", count)
+
             print(min_domain_row, min_domain_col, min_domain)
 
             # If one full iteration results in unchanged board, need to use search and backtracking to solve
@@ -87,8 +93,14 @@ class Solver:
     def backtrack(self, row, col, domain, board):
         print("To backtrack with: ", row, col, domain)
         temp_board = np.copy(board)
+        print(temp_board)
         choice = np.random.choice(domain)
         print("Choice: ", choice)
         temp_board[row, col] = choice
+        print(temp_board)
         attempt_solve = self.sudoku_solver(temp_board)
-        #if attempt_solve
+        #if attempt_solve is solution:
+        #    return board
+        #else:
+        #    domain.remove(choice)
+        #    backtrack(row, col, domain, temp_board)
