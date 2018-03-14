@@ -1,5 +1,5 @@
 import numpy as np
-from Solver import Solver
+from Sudoku import Sudoku
 import time
 
 # Load sudokus
@@ -29,8 +29,8 @@ t = time.process_time()
 #     #print("My solution:")
 #     solver.sudoku_solver(sudokus[i])
 
-solver = Solver()
-print(solver.sudoku_solver(hard_test))
+sudoku = Sudoku()
+print(sudoku.constaint_propagation(hard_test))
 
 elapsed_time = time.process_time() - t
 print(elapsed_time)
