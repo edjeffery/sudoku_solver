@@ -8,23 +8,8 @@ class Sudoku:
 
     def constaint_propagation(self):
 
-        #board = np.copy(sudoku)
-
-        iteration = 1
-
         # If zeros still on board, sudoku is not solved
         while not self.is_constraint_propagation_complete():
-
-            print("\nIteration ", iteration, "\n")
-            #print("\nBeginning of iteration\n", board)
-
-            prev_board = np.copy(self.board)
-
-            min_domain = [0] * 10
-            min_domain_row = 0
-            min_domain_col = 0
-
-            count = 0
 
             empty_cells = self.get_empty_cells()
             for cell in empty_cells:
@@ -33,67 +18,6 @@ class Sudoku:
                 # If cell is zero and has one possible value, put that value in
                 if len(possible_values) == 1:
                     self.board[cell[0], cell[1]] = possible_values[0]
-                    print("Change: ", i, j, self.board[i, j])
-
-
-            for i in range(0, 9):
-                # Sets the row
-                row = self.board[i]
-                # Sets the lower and upper row boundaries for the 3x3 grid square
-                row_low = (i // 3) * 3
-                row_high = row_low + 3
-                for j in range(0, 9):
-                    # Sets the column
-                    col = self.board[:, j]
-                    # Sets the lower and upper column boundaries for the 3x3 grid square
-                    col_low = (j // 3) * 3
-                    col_high = col_low + 3
-
-                    # Sets the 3x3 grid square
-                    grid = self.board[row_low:row_high, col_low:col_high]
-
-                    possible_values = []
-                    # If a value is not in the same row, column or grid square then it is a possible value
-                    for x in range(1, 10):
-                        if x not in row:
-                            if x not in col:
-                                if x not in grid:
-                                    possible_values.append(x)
-
-                    if 0 < len(possible_values) < len(min_domain) and self.board[i, j] == 0:
-                        min_domain = possible_values
-                        min_domain_row = i
-                        min_domain_col = j
-
-                    #print(i, j, possible_values)
-
-                    # If cell is zero and has one possible value, put that value in
-                    if len(possible_values) == 1 and self.board[i, j] == 0:
-                        self.board[i, j] = possible_values[0]
-                        print("Change: ", i, j, self.board[i, j])
-
-                    # If cell is zero and no possible values, then impossible sudoku
-                    if len(possible_values) == 0 and self.board[i, j] == 0:
-                        for x in range(9):
-                            for y in range(9):
-                                self.board[x, y] = -1
-                        return self.board
-
-                    if self.board[i, j] != 0:
-                        count += 1
-            print("Count: ", count)
-
-            print(min_domain_row, min_domain_col, min_domain)
-
-            # If one full iteration results in unchanged board, need to use search and backtracking to solve
-            if np.array_equal(prev_board, self.board):
-                print("Before sending to backtrack: \n", self.board)
-                self.backtrack_solve(min_domain_row, min_domain_col, min_domain, self.board)
-
-            iteration += 1
-        #solved_sudoku = np.copy(board)
-
-        #return self.board
 
     def is_complete(self):
         for i in range(9):
