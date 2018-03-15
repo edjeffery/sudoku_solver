@@ -6,7 +6,7 @@ class Sudoku:
     def __init__(self, board):
         self.board = board
 
-    def constaint_propagation(self):
+    def constraint_propagation(self):
         #print("test")
         # If zeros still on board, sudoku is not solved
         while not self.is_constraint_propagation_complete(self.get_empty_cells()):
@@ -94,48 +94,82 @@ class Sudoku:
 
         return possible_values
 
-    def backtrack_solve(self, board):
-        print("backtrack solve")
-        d = self.find_min_domain() # Think might need to pass board to find_min_domain
-        print(d)
-        row = d[0]
-        col = d[1]
-        domain = d[2]
-        if len(domain) == 0:
-            print("False")
-            return False
-        else:
-            for move in domain:
-                print(row, col, move)
-                temp_board = np.copy(board)
-                print("Before:\n", temp_board)
-                temp_board[row, col] = move
-                print("After:\n",temp_board)
-                self.constaint_propagation()
-                if self.is_complete():
-                    return True
-                else:
-                    print("Still not solved after constraint propagation")
-                    #domain.remove(move)
-                    self.backtrack_solve(temp_board)
-                    if self.is_complete():
-                        return True
-                    else:
-                        temp_board[row, col] = 0
-            return False
+    # def backtrack_solve(self, board):
+    #     # if complete return true
+    #     # get empty cells
+    #     # for each cell, get available values
+    #     # for each value, assign to sudoku
+    #     # if backtracking(object) is true: return True
+    #     # else, set back to zero
+    #     # return false outside available_values loop
+    #
+    #     print("backtrack solve")
+    #     d = self.find_min_domain() # Think might need to pass board to find_min_domain
+    #     print(d)
+    #     row = d[0]
+    #     col = d[1]
+    #     domain = d[2]
+    #     if len(domain) == 0:
+    #         print("False")
+    #         return False
+    #     else:
+    #         for move in domain:
+    #             print(row, col, move)
+    #             temp_board = np.copy(board)
+    #             print("Before:\n", temp_board)
+    #             temp_board[row, col] = move
+    #             print("After:\n",temp_board)
+    #             self.constaint_propagation()
+    #             if self.is_complete():
+    #                 return True
+    #             else:
+    #                 print("Still not solved after constraint propagation")
+    #                 #domain.remove(move)
+    #                 self.backtrack_solve(temp_board)
+    #                 if self.is_complete():
+    #                     return True
+    #                 else:
+    #                     temp_board[row, col] = 0
+    #         return False
+
+def backtrack(sudoku):
+    # if complete return true
+    # get empty cells
+    # for each cell, get available values
+    # for each value, assign to sudoku
+    # if backtracking(object) is true: return True
+    # else, set back to zero
+    # return false outside available_values loop
+
+    if sudoku.is_complete():
+        return True
+    empty_cells = sudoku.get_empty_cells()
+    for cell in empty_cells:
+        print("Cell:", cell)
+        possible_values = sudoku.get_possible_values(cell)
+        print(possible_values)
+        for move in possible_values:
+            sudoku.board[cell[0], cell[1]] = move
+
+            sudoku.constraint_propagation()
+            print(sudoku.board)
+            if backtrack(sudoku):
+                return True
+            else:
+                sudoku.board[cell[0], cell[1]] = 0
+        return False
 
 
 
 # Load sudokus
 sudokus = np.load("resources/data/sudokus.npy")
-print("Shape of sudokus array:", sudokus.shape, "; Type of array values:", sudokus.dtype)
 thousandsudokus = np.load("resources/data/sudoku-sample-1000.npy")
+impossiblesudokus = np.load("resources/data/sudoku-sample-15-unsolvable.npy")
 
 # Load solutions
 solutions = np.load("resources/data/solutions.npy")
-print("Shape of solutions array:", solutions.shape, "; Type of array values:", solutions.dtype, "\n")
 
-impossiblesudokus = np.load("resources/data/sudoku-sample-15-unsolvable.npy")
+
 
 
 hard_test = np.array([[0,0,0,7,0,0,0,0,0],
@@ -161,14 +195,17 @@ def sudoku_solver(board):
 
     s = Sudoku(board)
     #print(s.board)
-    s.constaint_propagation()
+    s.constraint_propagation()
     #print("Gone past constraint propagation")
     if s.is_complete():
         return s.board
     else:
         print("Not complete")
-        s.backtrack_solve(s.board)
-        if s.is_complete():
+        #backtrack(s)
+        #if s.is_complete():
+        #    return s.board
+        print(s.board)
+        if backtrack(s):
             return s.board
         else:
             return s.unsolvable_board()
