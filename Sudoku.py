@@ -133,31 +133,44 @@ class Sudoku:
     #         return False
 
 def backtrack(sudoku):
-    # if complete return true
-    # get empty cells
-    # for each cell, get available values
-    # for each value, assign to sudoku
-    # if backtracking(object) is true: return True
-    # else, set back to zero
-    # return false outside available_values loop
-
     if sudoku.is_complete():
         return True
     empty_cells = sudoku.get_empty_cells()
+    domain_lengths = []
     for cell in empty_cells:
-        print("Cell:", cell)
         possible_values = sudoku.get_possible_values(cell)
-        print(possible_values)
+        domain_lengths.append(len(possible_values))
+    sorted_empty_cells = [x for _,x in sorted(zip(domain_lengths,empty_cells))]
+
+    for cell in sorted_empty_cells:
+        possible_values = sudoku.get_possible_values(cell)
         for move in possible_values:
             sudoku.board[cell[0], cell[1]] = move
-
+            board_clone = np.copy(sudoku.board)
             sudoku.constraint_propagation()
-            print(sudoku.board)
+            if sudoku.is_complete():
+                return True
+            else:
+                sudoku.board = board_clone
             if backtrack(sudoku):
                 return True
             else:
                 sudoku.board[cell[0], cell[1]] = 0
         return False
+
+
+def sudoku_solver(board):
+
+    s = Sudoku(board)
+    #print(s.board)
+    s.constraint_propagation()
+    if s.is_complete():
+        return s.board
+    else:
+        if backtrack(s):
+            return s.board
+        else:
+            return s.unsolvable_board()
 
 
 
@@ -168,9 +181,6 @@ impossiblesudokus = np.load("resources/data/sudoku-sample-15-unsolvable.npy")
 
 # Load solutions
 solutions = np.load("resources/data/solutions.npy")
-
-
-
 
 hard_test = np.array([[0,0,0,7,0,0,0,0,0],
                       [1,0,0,0,0,0,0,0,0],
@@ -183,43 +193,17 @@ hard_test = np.array([[0,0,0,7,0,0,0,0,0],
                       [0,4,0,0,0,0,3,0,0]], np.int32)
 
 
+t = time.process_time()
+#s = sudoku_solver(sudokus[5])
+#print(s)
 
-# for i in range(100):
-#     #print("Solution of Sudoku:")
-#     #print(solutions[i], "\n")
-#     solver = Solver()
-#     #print("My solution:")
-#     solver.sudoku_solver(sudokus[i])
-
-def sudoku_solver(board):
-
-    s = Sudoku(board)
-    #print(s.board)
-    s.constraint_propagation()
-    #print("Gone past constraint propagation")
-    if s.is_complete():
-        return s.board
-    else:
-        print("Not complete")
-        #backtrack(s)
-        #if s.is_complete():
-        #    return s.board
-        print(s.board)
-        if backtrack(s):
-            return s.board
-        else:
-            return s.unsolvable_board()
-
-#t = time.process_time()
-s = sudoku_solver(hard_test)
-print(s)
-
-#for i in range(1000):
-#    s = sudoku_solver(thousandsudokus[i])
-#    #print(s)
+for i in range(100):
+    #print("Sudoku ", i)
+    s = sudoku_solver(sudokus[i])
+    #print(s)
 
 #s = sudoku_solver(sudokus[0])
 #print(s)
 
-#elapsed_time = time.process_time() - t
-#print(elapsed_time)
+elapsed_time = time.process_time() - t
+print(elapsed_time)
