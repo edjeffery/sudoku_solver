@@ -7,10 +7,8 @@ class Sudoku:
         self.board = board
 
     def constraint_propagation(self):
-        #print("test")
         # If zeros still on board, sudoku is not solved
         while not self.is_constraint_propagation_complete(self.get_empty_cells()):
-            #print("Iteration")
             empty_cells = self.get_empty_cells()
             for cell in empty_cells:
                 possible_values = self.get_possible_values(cell)
@@ -27,14 +25,11 @@ class Sudoku:
         return True
 
     def is_constraint_propagation_complete(self, empty_cells):
-        #print("Is constraint propagation complete?")
         for cell in empty_cells:
             possible_values = self.get_possible_values(cell)
-            #print(possible_values)
+
             if len(possible_values) == 1:
-                #print("False")
                 return False
-        #print("True")
         return True
 
     def unsolvable_board(self):
@@ -94,54 +89,22 @@ class Sudoku:
 
         return possible_values
 
-    # def backtrack_solve(self, board):
-    #     # if complete return true
-    #     # get empty cells
-    #     # for each cell, get available values
-    #     # for each value, assign to sudoku
-    #     # if backtracking(object) is true: return True
-    #     # else, set back to zero
-    #     # return false outside available_values loop
-    #
-    #     print("backtrack solve")
-    #     d = self.find_min_domain() # Think might need to pass board to find_min_domain
-    #     print(d)
-    #     row = d[0]
-    #     col = d[1]
-    #     domain = d[2]
-    #     if len(domain) == 0:
-    #         print("False")
-    #         return False
-    #     else:
-    #         for move in domain:
-    #             print(row, col, move)
-    #             temp_board = np.copy(board)
-    #             print("Before:\n", temp_board)
-    #             temp_board[row, col] = move
-    #             print("After:\n",temp_board)
-    #             self.constaint_propagation()
-    #             if self.is_complete():
-    #                 return True
-    #             else:
-    #                 print("Still not solved after constraint propagation")
-    #                 #domain.remove(move)
-    #                 self.backtrack_solve(temp_board)
-    #                 if self.is_complete():
-    #                     return True
-    #                 else:
-    #                     temp_board[row, col] = 0
-    #         return False
 
 def backtrack(sudoku):
     if sudoku.is_complete():
         return True
     empty_cells = sudoku.get_empty_cells()
+    # Get domain lengths for each empty cell
     domain_lengths = []
     for cell in empty_cells:
         possible_values = sudoku.get_possible_values(cell)
         domain_lengths.append(len(possible_values))
-    sorted_empty_cells = [x for _,x in sorted(zip(domain_lengths,empty_cells))]
 
+    # Sort cells by increasing domain length
+    sorted_empty_cells = [x for _, x in sorted(zip(domain_lengths, empty_cells))]
+
+    # For each empty cell, try move, constraint propagate
+    # and if it gets stuck, recursively call backtracking algorithm
     for cell in sorted_empty_cells:
         possible_values = sudoku.get_possible_values(cell)
         for move in possible_values:
@@ -160,9 +123,9 @@ def backtrack(sudoku):
 
 
 def sudoku_solver(board):
-
+    # Initialise sudoku and try to solve via constraint propagation
+    # If this does not solve the sudoku, try the backtracking algorithm
     s = Sudoku(board)
-    #print(s.board)
     s.constraint_propagation()
     if s.is_complete():
         return s.board
@@ -194,15 +157,12 @@ hard_test = np.array([[0,0,0,7,0,0,0,0,0],
 
 
 t = time.process_time()
-#s = sudoku_solver(sudokus[5])
-#print(s)
 
-for i in range(100):
-    #print("Sudoku ", i)
-    s = sudoku_solver(sudokus[i])
+for i in range(1000):
+    s = sudoku_solver(thousandsudokus[i])
     #print(s)
 
-#s = sudoku_solver(sudokus[0])
+#s = sudoku_solver(hard_test)
 #print(s)
 
 elapsed_time = time.process_time() - t
